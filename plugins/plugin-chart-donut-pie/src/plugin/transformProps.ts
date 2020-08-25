@@ -16,62 +16,143 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { ChartProps, DataRecord } from '@superset-ui/chart';
+import { ChartProps } from '@superset-ui/chart';
+import { t } from '@superset-ui/translation';
+import { TDonutPieChartData, TDonutPieChartProps } from '../components/DonutPieChart';
 
-type TimestampType = string | number | Date;
+type TMetric = {
+  label: string;
+};
 
-interface DonutPieDatum extends DataRecord {
-  __timestamp: TimestampType;
-}
+type TQueryData = {
+  [key: string]: number | string;
+};
 
-export default function transformProps(chartProps: ChartProps) {
-  /**
-   * This function is called after a successful response has been
-   * received from the chart data endpoint, and is used to transform
-   * the incoming data prior to being sent to the Visualization.
-   *
-   * The transformProps function is also quite useful to return
-   * additional/modified props to your data viz component. The formData
-   * can also be accessed from your DonutPie.tsx file, but
-   * doing supplying custom props here is often handy for integrating third
-   * party libraries that rely on specific props.
-   *
-   * A description of properties in `chartProps`:
-   * - `height`, `width`: the height/width of the DOM element in which
-   *   the chart is located
-   * - `formData`: the chart data request payload that was sent to the
-   *   backend.
-   * - `queryData`: the chart data response payload that was received
-   *   from the backend. Some notable properties of `queryData`:
-   *   - `data`: an array with data, each row with an object mapping
-   *     the column/alias to its value. Example:
-   *     `[{ col1: 'abc', metric1: 10 }, { col1: 'xyz', metric1: 20 }]`
-   *   - `rowcount`: the number of rows in `data`
-   *   - `query`: the query that was issued.
-   *
-   * Please note: the transformProps function gets cached when the
-   * application loads. When making changes to the `transformProps`
-   * function during development with hot reloading, changes won't
-   * be seen until restarting the development server.
-   */
+type TFormData = {
+  xAxisColumn: string;
+  periodColumn: string;
+  queryFields: { metrics: string };
+  metrics: TMetric[];
+};
+
+const convertDataForRecharts = (
+  periodColumn: string,
+  xAxisColumn: string,
+  valueColumn: string,
+  data: TQueryData[],
+) => {
+  // Group by period (temporary map)
+  const groupedData = data.reduce((acc, cur) => {
+    const period = cur[periodColumn] as string;
+    const periodData = acc.get(period) || [];
+    periodData.push(cur);
+    acc.set(period, periodData);
+    return acc;
+  }, new Map<string, TQueryData[]>());
+
+  let resultData: TQueryData[] = [];
+  let counter = 0;
+  groupedData.forEach((val, key) => {
+    // Sort for DonutPie Desc
+    val.sort((a, b) => (a[periodColumn] as number) - (b[periodColumn] as number));
+    // Calc total per period
+    const sum = val.reduce((acc, cur) => acc + (cur[valueColumn] as number), 0);
+    // Push total per period to the end of period values array
+    val.push({
+      [xAxisColumn]: key,
+      [periodColumn]: '__TOTAL__',
+      [valueColumn]: sum,
+    });
+    // Remove first period and leave only last one
+    if (counter++ === 0) {
+      // eslint-disable-next-line no-param-reassign
+      val = [val[val.length - 1]];
+    }
+    resultData = resultData.concat(val);
+  });
+  return resultData;
+};
+
+const createReChartsBarValues = (
+  rechartsData: TQueryData[],
+  valueColumn: keyof TQueryData,
+  periodColumn: keyof TQueryData,
+): TDonutPieChartData[] =>
+  // Create ReCharts values array of deltas for bars
+  rechartsData.map((cur: TQueryData, index: number) => {
+    let totalSumUpToCur = 0;
+    for (let i = 0; i < index; i++) {
+      // Ignore calculation on period column
+      if (rechartsData[i][periodColumn] !== '__TOTAL__' || i === 0) {
+        totalSumUpToCur += rechartsData[i][valueColumn] as number;
+      }
+    }
+
+    if (cur[periodColumn] === '__TOTAL__') {
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+      return {
+        ...cur,
+        __TOTAL__: true,
+        [valueColumn]: [0, totalSumUpToCur || cur[valueColumn]],
+      } as TDonutPieChartData;
+    }
+
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+    return {
+      ...cur,
+      [valueColumn]: [totalSumUpToCur, totalSumUpToCur + (cur[valueColumn] as number)],
+    } as TDonutPieChartData;
+  });
+
+export default function transformProps(chartProps: ChartProps): TDonutPieChartProps {
   const { width, height, formData, queryData } = chartProps;
-  const data = queryData.data as DonutPieDatum[];
 
-  console.log('formData via TransformProps.ts', formData);
+  const { periodColumn, xAxisColumn, metrics } = formData as TFormData;
+
+  const valueColumn = metrics[0].label;
+  let data = queryData.data as TQueryData[];
+
+  if (metrics.length !== 1) {
+    return {
+      dataKey: valueColumn,
+      width,
+      height,
+      error: t('Please choose only one "Metric" in "Query" section'),
+    };
+  }
+
+  // Remove bars with value 0
+  data = data.filter(item => item[valueColumn] !== 0);
+
+  // Sort by period (ascending)
+  data.sort(
+    (a, b) =>
+      Number.parseInt(a[periodColumn] as string, 10) -
+      Number.parseInt(b[periodColumn] as string, 10),
+  );
+
+  const rechartsData = convertDataForRecharts(periodColumn, xAxisColumn, valueColumn, data);
+
+  const resultData = createReChartsBarValues(rechartsData, valueColumn, periodColumn);
+
+  // eslint-disable-next-line unicorn/consistent-function-scoping
+  const onBarClick = () => {
+    // TODO: Uncomment when dashboard will support ChartsFilter
+    // hooks.onAddFilter({ [filterConfigs[0].column]: [data[filterConfigs[0].column]] }, false);
+  };
+  // eslint-disable-next-line unicorn/consistent-function-scoping
+  const resetFilters = () => {
+    // TODO: Uncomment when dashboard will support ChartsFilter
+    // hooks.onAddFilter({ [filterConfigs[0].column]: null }, false);
+  };
 
   return {
+    dataKey: valueColumn,
+    xAxisDataKey: xAxisColumn,
     width,
     height,
-
-    data: data.map((item: { __timestamp: TimestampType }) => ({
-      ...item,
-      // convert epoch to native Date
-      // eslint-disable-next-line no-underscore-dangle
-      __timestamp: new Date(item.__timestamp),
-    })),
-    // and now your control data, manipulated as needed, and passed through as props!
-    boldText: formData.boldText,
-    headerFontSize: formData.headerFontSize,
-    headerText: formData.headerText,
+    data: resultData,
+    onBarClick,
+    resetFilters,
   };
 }

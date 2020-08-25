@@ -1,7 +1,7 @@
 import 'babel-polyfill';
 import buildQuery from '../../src/plugin/buildQuery';
 
-describe('DonutPie buildQuery', () => {
+describe(' DonutPie buildQuery', () => {
   const formData = {
     datasource: '5__table',
     granularity_sqla: 'ds',

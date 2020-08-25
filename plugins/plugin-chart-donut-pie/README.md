@@ -10,9 +10,9 @@ This plugin provides Donut Pie for Superset.
 Configure `key`, which can be any `string`, and register the plugin. This `key` will be used to lookup this chart throughout the app.
 
 ```js
-import DonutPieChartPlugin from '@superset-ui/plugin-chart-donut-pie';
+import  DonutPieChartPlugin from '@superset-ui/plugin-chart-donut-pie';
 
-new DonutPieChartPlugin()
+new  DonutPieChartPlugin()
   .configure({ key: 'donut-pie' })
   .register();
 ```
@@ -37,7 +37,7 @@ Then use it via `SuperChart`. See [storybook](https://apache-superset.github.io/
 ├── README.md
 ├── package.json
 ├── src
-│   ├── DonutPie.tsx
+│   ├──  DonutPie.tsx
 │   ├── images
 │   │   └── thumbnail.png
 │   ├── index.ts

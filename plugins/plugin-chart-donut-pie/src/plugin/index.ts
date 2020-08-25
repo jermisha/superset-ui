@@ -25,7 +25,7 @@ import thumbnail from '../images/thumbnail.png';
 
 const metadata = new ChartMetadata({
   description: 'Donut Pie',
-  name: t('DonutPie'),
+  name: t(' DonutPie'),
   thumbnail,
 });
 
@@ -44,7 +44,7 @@ export default class DonutPieChartPlugin extends ChartPlugin {
     super({
       buildQuery,
       controlPanel,
-      loadChart: () => import('../DonutPie'),
+      loadChart: () => import('../components/DonutPieChart'),
       metadata,
       transformProps,
     });

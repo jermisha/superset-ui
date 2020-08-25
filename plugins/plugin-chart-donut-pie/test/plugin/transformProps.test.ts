@@ -2,7 +2,7 @@ import 'babel-polyfill';
 import { ChartProps } from '@superset-ui/chart';
 import transformProps from '../../src/plugin/transformProps';
 
-describe('DonutPie tranformProps', () => {
+describe(' DonutPie tranformProps', () => {
   const formData = {
     colorScheme: 'bnbColors',
     datasource: '3__table',

@@ -17,34 +17,31 @@
  * under the License.
  */
 import React, { createRef, FC, useState } from 'react';
-import { t } from '@superset-ui/translation';
+//import { t } from '@superset-ui/translation';
 import styled from '@superset-ui/style';
 import {
-  BarChart,
-  Bar,
-  LabelList,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  LabelProps,
+  PieChart,
+  Pie,
+  //Cell,
+  ContentRenderer,
+  Label,
+  //Percentage
 } from 'recharts';
-import DonutPieTick from './DonutPieTick';
-import { valueFormatter } from './utils';
-import DonutPieBar from './DonutPieBar';
-import DonutPieLegend from './DonutPieLegend';
+//import DonutPieTick from './DonutPieTick';
+//import { valueFormatter } from './utils';
+//import DonutPieBar from './DonutPieBar';
+//import DonutPieLegend from './DonutPieLegend';
 
 type TDonutPieStylesProps = {
   height: number;
   width: number;
 };
 
-export type TBarValue = [number, number];
+export type TDonutPieValue = [number, number];
 
 export type TDonutPieChartData = {
-  [key: string]: string | boolean | number | TBarValue;
+  [key: string]: string | boolean | number | TDonutPieValue;
 };
-
 export type TDonutPieChartProps = {
   xAxisDataKey?: string;
   dataKey: string;
@@ -53,6 +50,7 @@ export type TDonutPieChartProps = {
   resetFilters?: Function;
   onBarClick?: Function;
   width: number;
+  content?: React.ReactElement<any> | ContentRenderer<Label>;
   data?: TDonutPieChartData[];
 };
 
@@ -95,6 +93,31 @@ const Notification = styled.div`
   color: ${({ theme }) => theme.colors.info.dark1};
   background-color: ${({ theme }) => theme.colors.info.light1};
 `;
+/*
+const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
+
+const RADIAN = Math.PI / 180;
+
+//{ cx, cy, midAngle, innerRadius, outerRadius, percent, index, }
+const renderCustomizedLabel = () => {
+ 
+  let cx =200;
+  let cy =200;
+  let midAngle  = 15; 
+  let innerRadius = 40; 
+  let outerRadius =80;
+  let percent = 25;
+   const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+  const x = cx + radius * Math.cos(-midAngle * RADIAN);
+  const y = cy + radius * Math.sin(-midAngle * RADIAN);
+
+  return (
+    <text x={x} y={y} fill="white" textAnchor={x > cx ? 'start' : 'end'} dominantBaseline="central">
+      {`${(percent * 100).toFixed(0)}%`}
+    </text>
+  );
+};
+*/
 
 const DonutPieChart: FC<TDonutPieChartProps> = ({
   onBarClick = () => {},
@@ -108,14 +131,7 @@ const DonutPieChart: FC<TDonutPieChartProps> = ({
   const rootElem = createRef<HTMLDivElement>();
   const [notification, setNotification] = useState<string | null>(null);
 
-  const handleBarClick = (barData: TDonutPieChartData) => {
-    onBarClick(barData);
-    setNotification(t('Bar was clicked, filter will be emitted on a dashboard'));
-  };
   const closeNotification = () => setNotification(null);
-
-  const renderLabel: (barValue: LabelProps) => string = ({ value }) =>
-    valueFormatter(((value as unknown) as TBarValue)[1] - ((value as unknown) as TBarValue)[0]);
 
   return (
     <Styles ref={rootElem} height={height} width={width}>
@@ -124,8 +140,35 @@ const DonutPieChart: FC<TDonutPieChartProps> = ({
         <Error>{error}</Error>
       ) : (
         <div>
-          <DonutPieLegend />
-          <BarChart
+          {/*<DonutPieLegend />*/}
+          <PieChart width={600} height={600}>
+            <Pie
+              data={data}
+              cx={200}
+              cy={200}
+              dataKey="TAXI_IN"
+              startAngle={360}
+              endAngle={0}
+              label //={renderCustomizedLabel}
+              labelLine={false}
+              outerRadius={200}
+              fill="#8884d8"
+            >
+              {/*  data.map((entry, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />) */}
+            </Pie>
+          </PieChart>
+          {/*
+        
+        
+ 
+        
+        
+        
+        
+        
+        
+        
+        <BarChart
             margin={{ bottom: 100, top: 20 }}
             width={width - 20}
             height={height - 100}
@@ -143,7 +186,7 @@ const DonutPieChart: FC<TDonutPieChartProps> = ({
             >
               <LabelList dataKey={dataKey} position="top" content={renderLabel} />
             </Bar>
-          </BarChart>
+          </BarChart>*/}
         </div>
       )}
     </Styles>
@@ -151,3 +194,62 @@ const DonutPieChart: FC<TDonutPieChartProps> = ({
 };
 
 export default DonutPieChart;
+
+/*
+
+
+import React, { PureComponent } from 'react';
+import {
+  PieChart, Pie, Sector, Cell,
+} from 'recharts';
+
+const data = [
+  { name: 'Group A', value: 400 },
+  { name: 'Group B', value: 300 },
+  { name: 'Group C', value: 300 },
+  { name: 'Group D', value: 200 },
+];
+
+const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
+
+const RADIAN = Math.PI / 180;
+const renderCustomizedLabel = ({
+  cx, cy, midAngle, innerRadius, outerRadius, percent, index,
+}) => {
+   const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+  const x = cx + radius * Math.cos(-midAngle * RADIAN);
+  const y = cy + radius * Math.sin(-midAngle * RADIAN);
+
+  return (
+    <text x={x} y={y} fill="white" textAnchor={x > cx ? 'start' : 'end'} dominantBaseline="central">
+      {`${(percent * 100).toFixed(0)}%`}
+    </text>
+  );
+};
+
+export default class Example extends PureComponent {
+  static jsfiddleUrl = 'https://jsfiddle.net/alidingling/c9pL8k61/';
+
+  render() {
+    return (
+      <PieChart width={400} height={400}>
+        <Pie
+          data={data}
+          cx={200}
+          cy={200}
+          labelLine={false}
+          label={renderCustomizedLabel}
+          outerRadius={80}
+          fill="#8884d8"
+          dataKey="value"
+        >
+          {
+            data.map((entry, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />)
+          }
+        </Pie>
+      </PieChart>
+    );
+  }
+}
+
+*/

@@ -14,8 +14,7 @@ export type TDonutPieChartData = {
 export type DonutPieProps = {
   height: number;
   width: number;
-  data?: TDonutPieChartData[]; // please add additional typing for your data here
-  headerText: string;
+  data?: TDonutPieChartData[];
   dataKey: string;
 };
 
@@ -42,6 +41,10 @@ const DonutPie: FC<DonutPieProps> = ({ dataKey, data, height, width }) => {
   useEffect(() => {
     const root = rootElem.current as HTMLElement;
     console.log('Plugin element', root);
+    console.log('Plugin element2', dataKey);
+    console.log('Plugin element3', data);
+    console.log('Plugin element3', height);
+    console.log('Plugin element3', width);
   });
 
   return (
@@ -52,11 +55,9 @@ const DonutPie: FC<DonutPieProps> = ({ dataKey, data, height, width }) => {
             data={data}
             cx={200}
             cy={200}
-            dataKey="TAXI_IN"
-            startAngle={180}
+            dataKey={dataKey}
+            startAngle={360}
             endAngle={0}
-            label
-            labelLine={false}
             outerRadius={200}
             fill="#8884d8"
           />

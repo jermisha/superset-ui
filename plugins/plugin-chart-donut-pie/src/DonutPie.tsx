@@ -1,6 +1,6 @@
-import React, { useEffect, createRef, FC } from 'react';
+import React, { useState,  createRef, FC } from 'react';
 import styled from '@superset-ui/style';
-import { PieChart, Pie } from 'recharts';
+import { PieChart, Pie, Cell, RechartsFunction } from 'recharts';
 
 type TDonutPieStylesProps = {
   height: number;
@@ -16,6 +16,7 @@ export type DonutPieProps = {
   width: number;
   data?: TDonutPieChartData[];
   dataKey: string;
+  onClick?: RechartsFunction;
 };
 
 const Styles = styled.div<TDonutPieStylesProps>`
@@ -35,18 +36,18 @@ const Styles = styled.div<TDonutPieStylesProps>`
   }
 `;
 
-const DonutPie: FC<DonutPieProps> = ({ dataKey, data, height, width }) => {
+const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
+
+const DonutPie: FC<DonutPieProps> = ({ dataKey, data, height, width, onClick }) => {
   const rootElem = createRef<HTMLDivElement>();
-
-  useEffect(() => {
-    const root = rootElem.current as HTMLElement;
-    console.log('Plugin element', root);
-    console.log('Plugin element2', dataKey);
-    console.log('Plugin element3', data);
-    console.log('Plugin element3', height);
-    console.log('Plugin element3', width);
-  });
-
+  const [count, setCount] = useState(0);
+ 
+  onClick = (e, index) => {
+    console.log(e)
+    console.log(index)
+    setCount(index)
+    console.log(count)
+  }
   return (
     <Styles ref={rootElem} height={height} width={width}>
       <div>
@@ -60,7 +61,14 @@ const DonutPie: FC<DonutPieProps> = ({ dataKey, data, height, width }) => {
             endAngle={0}
             outerRadius={200}
             fill="#8884d8"
-          />
+            onClick={onClick}
+          >
+            {
+              data.map((entry, index) => (
+                <Cell key={`cell-${index}`} fill={COLORS[index % 3]} />
+              ))
+            }
+          </Pie>
         </PieChart>
       </div>
     </Styles>

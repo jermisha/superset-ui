@@ -1,14 +1,6 @@
 import { ChartProps } from '@superset-ui/chart';
 import { DonutPieProps } from '../DonutPie';
 
-type TMetric = {
-  label: string;
-};
-
-type TFormData = {
-  queryFields: { metric: string };
-  metrics: TMetric[];
-};
 type TQueryData = {
   [key: string]: number | string;
 };
@@ -19,6 +11,7 @@ export default function transformProps(chartProps: ChartProps): DonutPieProps {
 
   let data = queryData.data as TQueryData[];
   let dataKey = metric.label;
+  console.log(formData);
   return {
     dataKey,
     width,

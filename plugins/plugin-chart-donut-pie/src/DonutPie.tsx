@@ -17,6 +17,7 @@ export type DonutPieProps = {
   width: number;
   data?: TDonutPieChartData[];
   dataKey: string;
+  isDonut?: boolean;
   onClick?: RechartsFunction;
 };
 
@@ -49,9 +50,9 @@ const Styles = styled.div<TDonutPieStylesProps>`
   }
 `;
 
-const COLORS = ['#0088FE', '#00C49F', '#0066FE', '#FFBB28', '#FF8042'];
+const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
 
-const DonutPie: FC<DonutPieProps> = ({ dataKey, data, height, width, onClick }) => {
+const DonutPie: FC<DonutPieProps> = ({ dataKey, data, height, width, onClick, isDonut }) => {
   const rootElem = createRef<HTMLDivElement>();
   const [count, setCount] = useState(0);
   const [notification, setNotification] = useState<string | null>(null);
@@ -77,7 +78,7 @@ const DonutPie: FC<DonutPieProps> = ({ dataKey, data, height, width, onClick }) 
               startAngle={360}
               endAngle={0}
               outerRadius={200}
-              innerRadius={50}
+              innerRadius={isDonut ? 100 : 0}
               fill="#8884d8"
               onClick={onClick}
             >

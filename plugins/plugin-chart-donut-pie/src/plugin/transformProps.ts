@@ -11,11 +11,13 @@ export default function transformProps(chartProps: ChartProps): DonutPieProps {
 
   let data = queryData.data as TQueryData[];
   let dataKey = metric.label;
-  console.log(formData);
+  let isDonut = formData.donut;
+  console.log(chartProps);
   return {
     dataKey,
     width,
     height,
     data,
+    isDonut,
   };
 }

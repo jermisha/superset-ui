@@ -101,7 +101,7 @@ const DonutPie: FC<DonutPieProps> = ({ dataKey, data, height, width, onClick, is
               outerRadius={200}
               innerRadius={isDonut ? 80 : 0}
               fill="#8884d8"
-              label //={customizedLabel}
+              label={customizedLabel}
               onClick={onClick}
             >
               {data &&

@@ -1,7 +1,7 @@
 import React, { useState, createRef, FC } from 'react';
 import styled from '@superset-ui/style';
 import { t } from '@superset-ui/translation';
-import { PieChart, Pie, Cell, RechartsFunction } from 'recharts';
+import { PieChart, Pie, Cell, RechartsFunction, PieLabelRenderProps } from 'recharts';
 
 type TDonutPieStylesProps = {
   height: number;
@@ -52,6 +52,27 @@ const Styles = styled.div<TDonutPieStylesProps>`
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
 
+const RADIAN = Math.PI / 180;
+const customizedLabel = (s: PieLabelRenderProps) => {
+  console.log(s);
+  let innerRadius = s.innerRadius ? +s.innerRadius : 0;
+  let outerRadius = s.outerRadius ? +s.outerRadius : 200;
+  let cx = s.cx ? +s.cx : 200;
+  let cy = s.cy ? +s.cy : 200;
+  let percent = s.percent ? +s.percent : 200;
+  let midAngle = s.midAngle ? +s.midAngle : 200;
+
+  const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+  const x = cx + radius * Math.cos(-midAngle * RADIAN);
+  const y = cy + radius * Math.sin(-midAngle * RADIAN);
+
+  return (
+    <text x={x} y={y} fill="white" textAnchor={x > cx ? 'start' : 'end'} dominantBaseline="central">
+      {`${(percent * 100).toFixed(0)}%`}
+    </text>
+  );
+};
+
 const DonutPie: FC<DonutPieProps> = ({ dataKey, data, height, width, onClick, isDonut }) => {
   const rootElem = createRef<HTMLDivElement>();
   const [count, setCount] = useState(0);
@@ -62,7 +83,7 @@ const DonutPie: FC<DonutPieProps> = ({ dataKey, data, height, width, onClick, is
     console.log(index);
     setCount(index);
     console.log(count);
-    setNotification(t('Bar was clicked, filter will be emitted on a dashboard'));
+    setNotification(t('Sector was clicked, filter will be emitted on a dashboard'));
   };
   return (
     <Styles ref={rootElem} height={height} width={width}>
@@ -78,8 +99,9 @@ const DonutPie: FC<DonutPieProps> = ({ dataKey, data, height, width, onClick, is
               startAngle={360}
               endAngle={0}
               outerRadius={200}
-              innerRadius={isDonut ? 100 : 0}
+              innerRadius={isDonut ? 80 : 0}
               fill="#8884d8"
+              label //={customizedLabel}
               onClick={onClick}
             >
               {data &&

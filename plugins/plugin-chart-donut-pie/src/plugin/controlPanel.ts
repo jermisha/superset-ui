@@ -57,6 +57,16 @@ export default {
               description: t('Do you want a donut or a pie?'),
             },
           },
+          {
+            name: 'show_legend',
+            config: {
+              type: 'CheckboxControl',
+              label: t('Legend'),
+              renderTrigger: true,
+              default: true,
+              description: t('Whether to display the legend (toggles)'),
+            },
+          }
         ],
         [
           {

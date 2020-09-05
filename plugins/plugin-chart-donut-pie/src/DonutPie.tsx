@@ -86,12 +86,10 @@ const DonutPie: FC<DonutPieProps> = ({
   const [count, setCount] = useState(0);
   const [notification, setNotification] = useState<string | null>(null);
   const closeNotification = () => setNotification(null);
-  const colorFn = CategoricalColorNamespace.getScale(colorScheme);
-  console.log(colorFn);
+  const colorFn = CategoricalColorNamespace.getScale(colorScheme);    
   onClick = (e, index) => {
-    console.log(e);
     setCount(index);
-    console.log(count);
+    console.log(count)
     setNotification(t('Sector was clicked, filter will be emitted on a dashboard'));
   };
   return (
@@ -109,15 +107,13 @@ const DonutPie: FC<DonutPieProps> = ({
               endAngle={0}
               outerRadius={200}
               innerRadius={isDonut ? 80 : 0}
-              //fill="#8884d8"
               label={customizedLabel}
               paddingAngle={10}
               onClick={onClick}
-              //colorScheme={colorScheme}
             >
               {data &&
                 data.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={colorFn(index % 3)} />
+                  <Cell key={`cell-${index}`} fill={colorFn(index)} />
                 ))}
             </Pie>
           </PieChart>

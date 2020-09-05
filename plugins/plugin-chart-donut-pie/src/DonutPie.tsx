@@ -2,7 +2,7 @@ import React, { useState, createRef, FC } from 'react';
 import styled from '@superset-ui/style';
 import { t } from '@superset-ui/translation';
 import { PieChart, Pie, Cell, RechartsFunction, PieLabelRenderProps } from 'recharts';
-
+import { CategoricalColorNamespace } from '@superset-ui/color';
 type TDonutPieStylesProps = {
   height: number;
   width: number;
@@ -19,6 +19,8 @@ export type DonutPieProps = {
   dataKey: string;
   isDonut?: boolean;
   onClick?: RechartsFunction;
+  colorScheme: string;
+  baseColor: string;
 };
 
 const Notification = styled.div`
@@ -50,8 +52,6 @@ const Styles = styled.div<TDonutPieStylesProps>`
   }
 `;
 
-const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
-
 const RADIAN = Math.PI / 180;
 const customizedLabel = (s: PieLabelRenderProps) => {
   console.log(s);
@@ -73,14 +73,23 @@ const customizedLabel = (s: PieLabelRenderProps) => {
   );
 };
 
-const DonutPie: FC<DonutPieProps> = ({ dataKey, data, height, width, onClick, isDonut }) => {
+const DonutPie: FC<DonutPieProps> = ({
+  dataKey,
+  data,
+  height,
+  width,
+  onClick,
+  isDonut,
+  colorScheme,
+}) => {
   const rootElem = createRef<HTMLDivElement>();
   const [count, setCount] = useState(0);
   const [notification, setNotification] = useState<string | null>(null);
   const closeNotification = () => setNotification(null);
+  const colorFn = CategoricalColorNamespace.getScale(colorScheme);
+  console.log(colorFn);
   onClick = (e, index) => {
     console.log(e);
-    console.log(index);
     setCount(index);
     console.log(count);
     setNotification(t('Sector was clicked, filter will be emitted on a dashboard'));
@@ -100,12 +109,16 @@ const DonutPie: FC<DonutPieProps> = ({ dataKey, data, height, width, onClick, is
               endAngle={0}
               outerRadius={200}
               innerRadius={isDonut ? 80 : 0}
-              fill="#8884d8"
+              //fill="#8884d8"
               label={customizedLabel}
+              paddingAngle={10}
               onClick={onClick}
+              //colorScheme={colorScheme}
             >
               {data &&
-                data.map((entry, index) => <Cell key={`cell-${index}`} fill={COLORS[index % 3]} />)}
+                data.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={colorFn(index % 3)} />
+                ))}
             </Pie>
           </PieChart>
         </div>

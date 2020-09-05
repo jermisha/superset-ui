@@ -12,6 +12,7 @@ export default function transformProps(chartProps: ChartProps): DonutPieProps {
   let data = queryData.data as TQueryData[];
   let dataKey = metric.label;
   let isDonut = formData.donut;
+  const { colorScheme, colorPicker } = formData;
   console.log(chartProps);
   return {
     dataKey,
@@ -19,5 +20,7 @@ export default function transformProps(chartProps: ChartProps): DonutPieProps {
     height,
     data,
     isDonut,
+    baseColor: colorPicker,
+    colorScheme,
   };
 }

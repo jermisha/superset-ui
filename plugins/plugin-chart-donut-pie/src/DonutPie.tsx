@@ -3,6 +3,7 @@ import styled from '@superset-ui/style';
 import { t } from '@superset-ui/translation';
 import { PieChart, Pie, Cell, RechartsFunction, PieLabelRenderProps } from 'recharts';
 import { CategoricalColorNamespace } from '@superset-ui/color';
+import DonutPieLegend from './DonutPieLegend'
 type TDonutPieStylesProps = {
   height: number;
   width: number;
@@ -21,8 +22,15 @@ export type DonutPieProps = {
   onClick?: RechartsFunction;
   colorScheme: string;
   baseColor: string;
+  showLegend: boolean;
+  groupby: string;
 };
 
+export type TLegendProps = {
+  data?: TDonutPieChartData[];
+  colorFn: Function;
+  groupby: string;
+}; 
 const Notification = styled.div`
   cursor: pointer;
   width: 100%;
@@ -81,12 +89,16 @@ const DonutPie: FC<DonutPieProps> = ({
   onClick,
   isDonut,
   colorScheme,
+  showLegend,
+  groupby
 }) => {
   const rootElem = createRef<HTMLDivElement>();
   const [count, setCount] = useState(0);
   const [notification, setNotification] = useState<string | null>(null);
   const closeNotification = () => setNotification(null);
-  const colorFn = CategoricalColorNamespace.getScale(colorScheme);    
+  const colorFn = CategoricalColorNamespace.getScale(colorScheme);   
+  console.log("**************************") 
+  console.log(groupby)
   onClick = (e, index) => {
     setCount(index);
     console.log(count)
@@ -95,8 +107,10 @@ const DonutPie: FC<DonutPieProps> = ({
   return (
     <Styles ref={rootElem} height={height} width={width}>
       {notification && <Notification onClick={closeNotification}>{notification}</Notification>}
+      {showLegend && <DonutPieLegend data={data} colorFn={colorFn} groupby={groupby} />}
       {
         <div>
+        
           <PieChart width={600} height={600}>
             <Pie
               data={data}

@@ -7,20 +7,19 @@ type TQueryData = {
 
 export default function transformProps(chartProps: ChartProps): DonutPieProps {
   const { width, height, formData, queryData } = chartProps;
-  const { metric } = formData;
-
+  const { colorScheme, donut, groupby, metric, colorPicker, showLegend } = formData;
   let data = queryData.data as TQueryData[];
-  let dataKey = metric.label;
-  let isDonut = formData.donut;
-  const { colorScheme, colorPicker } = formData;
-  console.log(chartProps);
+  console.log("**********************************")
+  console.log(groupby)
   return {
-    dataKey,
+    dataKey: metric.label,
     width,
     height,
     data,
-    isDonut,
+    isDonut: donut,
     baseColor: colorPicker,
     colorScheme,
+    showLegend,
+    groupby: groupby[0]
   };
 }

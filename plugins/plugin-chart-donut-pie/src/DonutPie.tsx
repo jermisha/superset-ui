@@ -82,11 +82,9 @@ const DonutPie: FC<DonutPieProps> = ({
   const [notification, setNotification] = useState<string | null>(null);
   const closeNotification = () => setNotification(null);
   const colorFn = CategoricalColorNamespace.getScale(colorScheme);
-  console.log(showLabels);
-  console.log(labelsOutside);
   const RADIAN = Math.PI / 180;
   const customizedLabel = (s: PieLabelRenderProps) => {
-    console.log(s);
+    console.log(showLabels);
     let innerRadius = s.innerRadius ? +s.innerRadius : 0;
     let outerRadius = s.outerRadius ? +s.outerRadius : 200;
     let cx = s.cx ? +s.cx : 200;
@@ -94,7 +92,9 @@ const DonutPie: FC<DonutPieProps> = ({
     let percent = s.percent ? +s.percent : 200;
     let midAngle = s.midAngle ? +s.midAngle : 200;
 
-    const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+    let radius = labelsOutside
+      ? outerRadius * 1.1
+      : innerRadius + (outerRadius - innerRadius) * 0.5;
     const x = cx + radius * Math.cos(-midAngle * RADIAN);
     const y = cy + radius * Math.sin(-midAngle * RADIAN);
 
@@ -102,7 +102,7 @@ const DonutPie: FC<DonutPieProps> = ({
       <text
         x={x}
         y={y}
-        fill="white"
+        fill={labelsOutside ? 'green' : 'white'}
         textAnchor={x > cx ? 'start' : 'end'}
         dominantBaseline="central"
       >

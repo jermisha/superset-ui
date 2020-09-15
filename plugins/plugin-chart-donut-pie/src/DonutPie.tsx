@@ -23,6 +23,8 @@ export type DonutPieProps = {
   colorScheme: string;
   baseColor: string;
   showLegend: boolean;
+  showLabels: boolean;
+  labelsOutside: boolean;
   groupby: string;
   pieLabelType: string;
 };
@@ -70,6 +72,8 @@ const DonutPie: FC<DonutPieProps> = ({
   isDonut,
   colorScheme,
   showLegend,
+  showLabels,
+  labelsOutside,
   groupby,
   pieLabelType,
 }) => {
@@ -78,6 +82,8 @@ const DonutPie: FC<DonutPieProps> = ({
   const [notification, setNotification] = useState<string | null>(null);
   const closeNotification = () => setNotification(null);
   const colorFn = CategoricalColorNamespace.getScale(colorScheme);
+  console.log(showLabels);
+  console.log(labelsOutside);
   const RADIAN = Math.PI / 180;
   const customizedLabel = (s: PieLabelRenderProps) => {
     console.log(s);

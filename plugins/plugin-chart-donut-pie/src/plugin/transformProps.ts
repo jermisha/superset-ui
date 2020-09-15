@@ -7,10 +7,18 @@ type TQueryData = {
 
 export default function transformProps(chartProps: ChartProps): DonutPieProps {
   const { width, height, formData, queryData } = chartProps;
-  const { colorScheme, donut, groupby, metric, colorPicker, showLegend, pieLabelType } = formData;
+  const {
+    colorScheme,
+    donut,
+    groupby,
+    metric,
+    colorPicker,
+    showLegend,
+    pieLabelType,
+    showLabels,
+    labelsOutside,
+  } = formData;
   let data = queryData.data as TQueryData[];
-  console.log('**********************************');
-  console.log(pieLabelType);
   return {
     dataKey: metric.label,
     width,
@@ -20,6 +28,8 @@ export default function transformProps(chartProps: ChartProps): DonutPieProps {
     baseColor: colorPicker,
     colorScheme,
     showLegend,
+    showLabels,
+    labelsOutside,
     groupby: groupby[0],
     pieLabelType,
   };

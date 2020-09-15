@@ -24,6 +24,7 @@ export type DonutPieProps = {
   baseColor: string;
   showLegend: boolean;
   groupby: string;
+  pieLabelType: string;
 };
 
 export type TLegendProps = {
@@ -70,6 +71,7 @@ const DonutPie: FC<DonutPieProps> = ({
   colorScheme,
   showLegend,
   groupby,
+  pieLabelType,
 }) => {
   const rootElem = createRef<HTMLDivElement>();
   const [count, setCount] = useState(0);
@@ -98,7 +100,13 @@ const DonutPie: FC<DonutPieProps> = ({
         textAnchor={x > cx ? 'start' : 'end'}
         dominantBaseline="central"
       >
-        {`${(percent * 100).toFixed(0)}%`}
+        {pieLabelType === 'key' && `${s[groupby]}`}
+        {pieLabelType === 'value' && `${s.value}`}
+        {pieLabelType === 'percent' && `${(percent * 100).toFixed(0)}%`}
+        {pieLabelType === 'key_value' && `${s[groupby]}: ${s.value}`}
+        {pieLabelType === 'key_percent' && `${s[groupby]}: ${(percent * 100).toFixed(0)}%`}
+        {pieLabelType === 'key_value_percent' &&
+          `${s[groupby]}: ${s.value} ${(percent * 100).toFixed(0)}%`}
       </text>
     );
   };

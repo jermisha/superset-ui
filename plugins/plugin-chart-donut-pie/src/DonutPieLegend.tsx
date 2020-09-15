@@ -1,9 +1,7 @@
-  
 import React from 'react';
 //import { t } from '@superset-ui/translation';
 import styled from '@superset-ui/style';
-import { TLegendProps } from './DonutPie'
-
+import { TLegendProps } from './DonutPie';
 
 const Legend = styled.div`
   padding: 20px;
@@ -36,13 +34,16 @@ const LegendLabel = styled.div`
   font-size: ${({ theme }) => theme?.typography?.sizes?.l};
 `;
 
-const DonutPieLegend = (p: TLegendProps) => <Legend data-test-id="legend">
-    {p.data && p.data.map((item, index) => (
-      <LegendItem key={item[p.groupby]}>
-        <LegendIcon color={p.colorFn(index)} />
-        <LegendLabel>{item[p.groupby]}</LegendLabel>
-      </LegendItem>
-    ))}
-    </Legend>
+const DonutPieLegend = (p: TLegendProps) => (
+  <Legend data-test-id="legend">
+    {p.data &&
+      p.data.map((item, index) => (
+        <LegendItem key={`legend-${index}`}>
+          <LegendIcon color={p.colorFn(index)} />
+          <LegendLabel>{item[p.groupby]}</LegendLabel>
+        </LegendItem>
+      ))}
+  </Legend>
+);
 
 export default DonutPieLegend;

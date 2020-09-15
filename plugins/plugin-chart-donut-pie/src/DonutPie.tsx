@@ -3,7 +3,7 @@ import styled from '@superset-ui/style';
 import { t } from '@superset-ui/translation';
 import { PieChart, Pie, Cell, RechartsFunction, PieLabelRenderProps } from 'recharts';
 import { CategoricalColorNamespace } from '@superset-ui/color';
-import DonutPieLegend from './DonutPieLegend'
+import DonutPieLegend from './DonutPieLegend';
 type TDonutPieStylesProps = {
   height: number;
   width: number;
@@ -30,7 +30,7 @@ export type TLegendProps = {
   data?: TDonutPieChartData[];
   colorFn: Function;
   groupby: string;
-}; 
+};
 const Notification = styled.div`
   cursor: pointer;
   width: 100%;
@@ -60,27 +60,6 @@ const Styles = styled.div<TDonutPieStylesProps>`
   }
 `;
 
-const RADIAN = Math.PI / 180;
-const customizedLabel = (s: PieLabelRenderProps) => {
-  console.log(s);
-  let innerRadius = s.innerRadius ? +s.innerRadius : 0;
-  let outerRadius = s.outerRadius ? +s.outerRadius : 200;
-  let cx = s.cx ? +s.cx : 200;
-  let cy = s.cy ? +s.cy : 200;
-  let percent = s.percent ? +s.percent : 200;
-  let midAngle = s.midAngle ? +s.midAngle : 200;
-
-  const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
-  const x = cx + radius * Math.cos(-midAngle * RADIAN);
-  const y = cy + radius * Math.sin(-midAngle * RADIAN);
-
-  return (
-    <text x={x} y={y} fill="white" textAnchor={x > cx ? 'start' : 'end'} dominantBaseline="central">
-      {`${(percent * 100).toFixed(0)}%`}
-    </text>
-  );
-};
-
 const DonutPie: FC<DonutPieProps> = ({
   dataKey,
   data,
@@ -90,18 +69,42 @@ const DonutPie: FC<DonutPieProps> = ({
   isDonut,
   colorScheme,
   showLegend,
-  groupby
+  groupby,
 }) => {
   const rootElem = createRef<HTMLDivElement>();
   const [count, setCount] = useState(0);
   const [notification, setNotification] = useState<string | null>(null);
   const closeNotification = () => setNotification(null);
-  const colorFn = CategoricalColorNamespace.getScale(colorScheme);   
-  console.log("**************************") 
-  console.log(groupby)
+  const colorFn = CategoricalColorNamespace.getScale(colorScheme);
+  const RADIAN = Math.PI / 180;
+  const customizedLabel = (s: PieLabelRenderProps) => {
+    console.log(s);
+    let innerRadius = s.innerRadius ? +s.innerRadius : 0;
+    let outerRadius = s.outerRadius ? +s.outerRadius : 200;
+    let cx = s.cx ? +s.cx : 200;
+    let cy = s.cy ? +s.cy : 200;
+    let percent = s.percent ? +s.percent : 200;
+    let midAngle = s.midAngle ? +s.midAngle : 200;
+
+    const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+    const x = cx + radius * Math.cos(-midAngle * RADIAN);
+    const y = cy + radius * Math.sin(-midAngle * RADIAN);
+
+    return (
+      <text
+        x={x}
+        y={y}
+        fill="white"
+        textAnchor={x > cx ? 'start' : 'end'}
+        dominantBaseline="central"
+      >
+        {`${(percent * 100).toFixed(0)}%`}
+      </text>
+    );
+  };
   onClick = (e, index) => {
     setCount(index);
-    console.log(count)
+    console.log(count);
     setNotification(t('Sector was clicked, filter will be emitted on a dashboard'));
   };
   return (
@@ -110,7 +113,6 @@ const DonutPie: FC<DonutPieProps> = ({
       {showLegend && <DonutPieLegend data={data} colorFn={colorFn} groupby={groupby} />}
       {
         <div>
-        
           <PieChart width={600} height={600}>
             <Pie
               data={data}
@@ -121,14 +123,12 @@ const DonutPie: FC<DonutPieProps> = ({
               endAngle={0}
               outerRadius={200}
               innerRadius={isDonut ? 80 : 0}
+              labelLine={false}
               label={customizedLabel}
-              paddingAngle={10}
               onClick={onClick}
             >
               {data &&
-                data.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={colorFn(index)} />
-                ))}
+                data.map((entry, index) => <Cell key={`cell-${index}`} fill={colorFn(index)} />)}
             </Pie>
           </PieChart>
         </div>

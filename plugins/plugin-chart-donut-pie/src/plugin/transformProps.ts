@@ -17,8 +17,10 @@ export default function transformProps(chartProps: ChartProps): DonutPieProps {
     pieLabelType,
     showLabels,
     labelsOutside,
+    numberFormat,
   } = formData;
   let data = queryData.data as TQueryData[];
+  console.log(chartProps);
   return {
     dataKey: metric.label,
     width,
@@ -32,5 +34,6 @@ export default function transformProps(chartProps: ChartProps): DonutPieProps {
     labelsOutside,
     groupby: groupby[0],
     pieLabelType,
+    numberFormat,
   };
 }

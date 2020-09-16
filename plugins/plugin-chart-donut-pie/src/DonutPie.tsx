@@ -27,6 +27,7 @@ export type DonutPieProps = {
   labelsOutside: boolean;
   groupby: string;
   pieLabelType: string;
+  numberFormat: string;
 };
 
 export type TLegendProps = {
@@ -76,12 +77,14 @@ const DonutPie: FC<DonutPieProps> = ({
   labelsOutside,
   groupby,
   pieLabelType,
+  numberFormat,
 }) => {
   const rootElem = createRef<HTMLDivElement>();
   const [count, setCount] = useState(0);
   const [notification, setNotification] = useState<string | null>(null);
   const closeNotification = () => setNotification(null);
   const colorFn = CategoricalColorNamespace.getScale(colorScheme);
+  console.log('********** * numberFormat :: ', numberFormat);
   const RADIAN = Math.PI / 180;
   const customizedLabel = (s: PieLabelRenderProps) => {
     console.log(showLabels);
@@ -135,10 +138,10 @@ const DonutPie: FC<DonutPieProps> = ({
               dataKey={dataKey}
               startAngle={360}
               endAngle={0}
-              outerRadius={200}
-              innerRadius={isDonut ? 80 : 0}
+              outerRadius={100}
+              innerRadius={isDonut ? 50 : 0}
               labelLine={false}
-              label={customizedLabel}
+              label={showLabels ? customizedLabel : false}
               onClick={onClick}
             >
               {data &&

@@ -26,7 +26,7 @@ export default function transformProps(chartProps: ChartProps): DonutPieProps {
     width,
     height,
     data,
-    isDonut: donut,
+    donut,
     baseColor: colorPicker,
     colorScheme,
     showLegend,

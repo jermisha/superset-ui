@@ -18,7 +18,7 @@ export type DonutPieProps = {
   width: number;
   data?: TDonutPieChartData[];
   dataKey: string;
-  isDonut?: boolean;
+  donut?: boolean;
   onClick?: RechartsFunction;
   colorScheme: string;
   baseColor: string;
@@ -70,7 +70,7 @@ const DonutPie: FC<DonutPieProps> = ({
   height,
   width,
   onClick,
-  isDonut,
+  donut,
   colorScheme,
   showLegend,
   showLabels,
@@ -84,7 +84,7 @@ const DonutPie: FC<DonutPieProps> = ({
   const [notification, setNotification] = useState<string | null>(null);
   const closeNotification = () => setNotification(null);
   const colorFn = CategoricalColorNamespace.getScale(colorScheme);
-  console.log('********** * numberFormat :: ', numberFormat);
+
   const RADIAN = Math.PI / 180;
   const customizedLabel = (s: PieLabelRenderProps) => {
     console.log(showLabels);
@@ -130,7 +130,7 @@ const DonutPie: FC<DonutPieProps> = ({
       {showLegend && <DonutPieLegend data={data} colorFn={colorFn} groupby={groupby} />}
       {
         <div>
-          <PieChart width={600} height={600}>
+          <PieChart width={600} height={800}>
             <Pie
               data={data}
               cx={200}
@@ -138,11 +138,12 @@ const DonutPie: FC<DonutPieProps> = ({
               dataKey={dataKey}
               startAngle={360}
               endAngle={0}
-              outerRadius={100}
-              innerRadius={isDonut ? 50 : 0}
+              outerRadius={200}
+              innerRadius={donut ? 80 : 0}
               labelLine={false}
               label={showLabels ? customizedLabel : false}
               onClick={onClick}
+              isAnimationActive={false}
             >
               {data &&
                 data.map((entry, index) => <Cell key={`cell-${index}`} fill={colorFn(index)} />)}

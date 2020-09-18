@@ -5,6 +5,16 @@ import { PieChart, Pie, Cell, RechartsFunction, PieLabelRenderProps } from 'rech
 import { CategoricalColorNamespace } from '@superset-ui/color';
 import { getNumberFormatter, NumberFormats } from '@superset-ui/number-format';
 import DonutPieLegend from './DonutPieLegend';
+
+const PieConstants = {
+  WIDTH: 800,
+  HEIGHT: 800,
+  CX: 300,
+  CY: 300,
+  OUTER_RADIUS: 250,
+  INNER_RADIUS: 100,
+};
+
 type TDonutPieStylesProps = {
   height: number;
   width: number;
@@ -116,7 +126,7 @@ const DonutPie: FC<DonutPieProps> = ({
         {pieLabelType === 'key_value' && `${s[groupby]}: ${numberFormatter(s.value)}`}
         {pieLabelType === 'key_percent' && `${s[groupby]}: ${percentFormatter(percent)}`}
         {pieLabelType === 'key_value_percent' &&
-          `${s[groupby]}: ${numberFormatter(s.value)} ${percentFormatter(percent)}`}
+          `${s[groupby]}: ${numberFormatter(s.value)} (${percentFormatter(percent)})`}
       </text>
     );
   };
@@ -131,16 +141,16 @@ const DonutPie: FC<DonutPieProps> = ({
       {showLegend && <DonutPieLegend data={data} colorFn={colorFn} groupby={groupby} />}
       {
         <div>
-          <PieChart width={600} height={800}>
+          <PieChart width={PieConstants.WIDTH} height={PieConstants.HEIGHT}>
             <Pie
               data={data}
-              cx={200}
-              cy={200}
+              cx={PieConstants.CX}
+              cy={PieConstants.CY}
               dataKey={dataKey}
               startAngle={360}
               endAngle={0}
-              outerRadius={200}
-              innerRadius={donut ? 80 : 0}
+              outerRadius={PieConstants.OUTER_RADIUS}
+              innerRadius={donut ? PieConstants.INNER_RADIUS : 0}
               labelLine={false}
               label={showLabels ? customizedLabel : false}
               onClick={onClick}
@@ -157,27 +167,3 @@ const DonutPie: FC<DonutPieProps> = ({
 };
 
 export default DonutPie;
-
-/*
-if (['key', 'value', 'percent'].includes(pieLabelType)) {
-  chart.labelType(pieLabelType);
-} else if (pieLabelType === 'key_value') {
-  chart.labelType(d => `${d.data.x}: ${numberFormatter(d.data.y)}`);
-} else {
-  // pieLabelType in ['key_percent', 'key_value_percent']
-  const total = d3.sum(data, d => d.y);
-  const percentFormatter = getNumberFormatter(NumberFormats.PERCENT_2_POINT);
-  if (pieLabelType === 'key_percent') {
-    chart.tooltip.valueFormatter(d => percentFormatter(d));
-    chart.labelType(d => `${d.data.x}: ${percentFormatter(d.data.y / total)}`);
-  } else {
-    // pieLabelType === 'key_value_percent'
-    chart.tooltip.valueFormatter(
-      d => `${numberFormatter(d)} (${percentFormatter(d / total)})`,
-    );
-    chart.labelType(
-      d =>
-        `${d.data.x}: ${numberFormatter(d.data.y)} (${percentFormatter(d.data.y / total)})`,
-    );
-  }
-}*/

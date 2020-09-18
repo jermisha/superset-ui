@@ -9,10 +9,10 @@ import DonutPieLegend from './DonutPieLegend';
 const PieConstants = {
   WIDTH: 800,
   HEIGHT: 800,
-  CX: 300,
+  CX: 400,
   CY: 300,
-  OUTER_RADIUS: 250,
-  INNER_RADIUS: 100,
+  OUTER_RADIUS: 225,
+  INNER_RADIUS: 125,
 };
 
 type TDonutPieStylesProps = {
@@ -105,9 +105,7 @@ const DonutPie: FC<DonutPieProps> = ({
     let percent = s.percent ? +s.percent : 200;
     let midAngle = s.midAngle ? +s.midAngle : 200;
 
-    let radius = labelsOutside
-      ? outerRadius * 1.1
-      : innerRadius + (outerRadius - innerRadius) * 0.5;
+    let radius = labelsOutside ? outerRadius : innerRadius + (outerRadius - innerRadius) * 0.5;
     const x = cx + radius * Math.cos(-midAngle * RADIAN);
     const y = cy + radius * Math.sin(-midAngle * RADIAN);
     const numberFormatter = getNumberFormatter(numberFormat);
@@ -116,7 +114,7 @@ const DonutPie: FC<DonutPieProps> = ({
       <text
         x={x}
         y={y}
-        fill={labelsOutside ? 'green' : 'white'}
+        fill={'black'}
         textAnchor={x > cx ? 'start' : 'end'}
         dominantBaseline="central"
       >

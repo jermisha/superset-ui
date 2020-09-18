@@ -3,6 +3,7 @@ import styled from '@superset-ui/style';
 import { t } from '@superset-ui/translation';
 import { PieChart, Pie, Cell, RechartsFunction, PieLabelRenderProps } from 'recharts';
 import { CategoricalColorNamespace } from '@superset-ui/color';
+import { getNumberFormatter, NumberFormats } from '@superset-ui/number-format';
 import DonutPieLegend from './DonutPieLegend';
 type TDonutPieStylesProps = {
   height: number;
@@ -87,7 +88,6 @@ const DonutPie: FC<DonutPieProps> = ({
 
   const RADIAN = Math.PI / 180;
   const customizedLabel = (s: PieLabelRenderProps) => {
-    console.log(showLabels);
     let innerRadius = s.innerRadius ? +s.innerRadius : 0;
     let outerRadius = s.outerRadius ? +s.outerRadius : 200;
     let cx = s.cx ? +s.cx : 200;
@@ -100,7 +100,8 @@ const DonutPie: FC<DonutPieProps> = ({
       : innerRadius + (outerRadius - innerRadius) * 0.5;
     const x = cx + radius * Math.cos(-midAngle * RADIAN);
     const y = cy + radius * Math.sin(-midAngle * RADIAN);
-
+    const numberFormatter = getNumberFormatter(numberFormat);
+    const percentFormatter = getNumberFormatter(NumberFormats.PERCENT_2_POINT);
     return (
       <text
         x={x}
@@ -110,12 +111,12 @@ const DonutPie: FC<DonutPieProps> = ({
         dominantBaseline="central"
       >
         {pieLabelType === 'key' && `${s[groupby]}`}
-        {pieLabelType === 'value' && `${s.value}`}
-        {pieLabelType === 'percent' && `${(percent * 100).toFixed(0)}%`}
-        {pieLabelType === 'key_value' && `${s[groupby]}: ${s.value}`}
-        {pieLabelType === 'key_percent' && `${s[groupby]}: ${(percent * 100).toFixed(0)}%`}
+        {pieLabelType === 'value' && `${numberFormatter(s.value)}`}
+        {pieLabelType === 'percent' && `${percentFormatter(percent)}`}
+        {pieLabelType === 'key_value' && `${s[groupby]}: ${numberFormatter(s.value)}`}
+        {pieLabelType === 'key_percent' && `${s[groupby]}: ${percentFormatter(percent)}`}
         {pieLabelType === 'key_value_percent' &&
-          `${s[groupby]}: ${s.value} ${(percent * 100).toFixed(0)}%`}
+          `${s[groupby]}: ${numberFormatter(s.value)} ${percentFormatter(percent)}`}
       </text>
     );
   };
@@ -156,3 +157,27 @@ const DonutPie: FC<DonutPieProps> = ({
 };
 
 export default DonutPie;
+
+/*
+if (['key', 'value', 'percent'].includes(pieLabelType)) {
+  chart.labelType(pieLabelType);
+} else if (pieLabelType === 'key_value') {
+  chart.labelType(d => `${d.data.x}: ${numberFormatter(d.data.y)}`);
+} else {
+  // pieLabelType in ['key_percent', 'key_value_percent']
+  const total = d3.sum(data, d => d.y);
+  const percentFormatter = getNumberFormatter(NumberFormats.PERCENT_2_POINT);
+  if (pieLabelType === 'key_percent') {
+    chart.tooltip.valueFormatter(d => percentFormatter(d));
+    chart.labelType(d => `${d.data.x}: ${percentFormatter(d.data.y / total)}`);
+  } else {
+    // pieLabelType === 'key_value_percent'
+    chart.tooltip.valueFormatter(
+      d => `${numberFormatter(d)} (${percentFormatter(d / total)})`,
+    );
+    chart.labelType(
+      d =>
+        `${d.data.x}: ${numberFormatter(d.data.y)} (${percentFormatter(d.data.y / total)})`,
+    );
+  }
+}*/
